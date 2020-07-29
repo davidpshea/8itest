@@ -3,6 +3,8 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <QString>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -76,9 +78,16 @@ QWidget* MainWindow::createLayoutWidget()
 
 void MainWindow::loadButtonClicked()
 {
-    QPixmap* pic = new QPixmap ("./givenfiles/Barbie.png");    
-    QPixmap picScaled = pic->scaled(imageWidth, imageHeight);
-    inputImageLabel->setPixmap(picScaled);
+    // Ask user for a file to load
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Select Input Image"), ".", tr("Image Files (*.png *.jpg *.bmp)"));
+
+    if (! fileName.isNull())
+    {
+        QPixmap* pic = new QPixmap (fileName);
+        QPixmap picScaled = pic->scaled(imageWidth, imageHeight);
+        inputImageLabel->setPixmap(picScaled);
+    }
 }
 
 
