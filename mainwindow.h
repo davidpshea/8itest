@@ -8,6 +8,8 @@
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QWidget;
+class ImageLabel;
+class QSlider;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -20,17 +22,28 @@ public:
 
 private:
     QWidget* createLayoutWidget();
+    void updateUIWithNewImages();
+    void ProcessImage();
 
-    QLineEdit* display;
+//    QLineEdit* display;
 
     QLabel* inputImageLabel;
     QLabel* outputImageLabel;
 
-    const int imageWidth = 320; //640;
-    const int imageHeight = 200; //480;
+    QImage* inputImage = nullptr;
+    QImage* outputImage = nullptr;
+
+    QImage* backgroundImage = nullptr;
+
+    QSlider* imageZoomLevel;
+    QSlider* threshold;
+
+    int imageWidth = 320; //640;
+    int imageHeight = 200;
 
 private slots:
     void loadButtonClicked();
-
+    void thresholdSliderReleased(int newValue);
+    void imageZoomLevelSliderReleased();
 };
 #endif // MAINWINDOW_H

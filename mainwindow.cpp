@@ -4,7 +4,14 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QString>
+#include <QSlider>
 #include <QFileDialog>
+#include <QDebug>
+
+
+#include "debayered.h"
+#include "imagelabel.h"
+#include "removebackground.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -40,6 +47,7 @@ QWidget* MainWindow::createLayoutWidget()
     QWidget *central_widget = new QWidget;
     QGridLayout* lay = new QGridLayout(central_widget);
 
+    #if 0
     display = new QLineEdit("XX");
      display->setReadOnly(false);
   //   display->setAlignment(Qt::AlignRight);
@@ -47,30 +55,59 @@ QWidget* MainWindow::createLayoutWidget()
      QFont font = display->font();
      font.setPointSize(font.pointSize() + 8);     
      display->setFont(font);
+    #endif
 
 //    QLabel* right_label = new QLabel("RIGHT");
 //    right_label->setAlignment(Qt::AlignCenter);
 
     QPushButton* loadButton = new QPushButton("Load", this);
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()));
+//    QSize size = loadButton->
+    loadButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     lay->addWidget(loadButton, 0, 0);
-    lay->addWidget(display, 1, 0);
+//    lay->addWidget(display, 1, 0);
 
-    inputImageLabel = new QLabel ("In");
-    outputImageLabel = new QLabel ("Out");
+    threshold = new QSlider(Qt::Orientation::Horizontal);
+    threshold->setMinimum(0);
+    threshold->setMaximum(100);
+    threshold->setValue(10);
+    threshold->setTracking(true);
+    threshold->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    connect(threshold, SIGNAL(valueChanged(int)), this, SLOT(thresholdSliderReleased(int)));
 
-    QPixmap* pic = new QPixmap ("./givenfiles/Bottle.png");    
-    QPixmap picScaled = pic->scaled(imageWidth, imageHeight);
 
-    inputImageLabel->setPixmap(picScaled);
+
+    lay->addWidget(threshold, 1, 0);
+
+    imageZoomLevel = new QSlider(Qt::Orientation::Horizontal);
+    imageZoomLevel->setValue(20);
+    imageZoomLevel->setMinimum(5);
+    imageZoomLevel->setMaximum(30);
+    imageZoomLevel->setTracking(true);
+    imageZoomLevel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    connect(imageZoomLevel, SIGNAL(sliderReleased()), this, SLOT(imageZoomLevelSliderReleased()));
+    lay->addWidget(imageZoomLevel, 2, 0);
+
+    inputImageLabel = new QLabel;
+    outputImageLabel = new QLabel;
+
+    QImage* backdropImage = new QImage("./givenfiles/CleanPlate.png");
+    backgroundImage = DebayerImageRGGB(backdropImage);
+ //   QPixmap picScaled = pic->scaled(imageWidth, imageHeight);
+
+  //  inputImageLabel->setPixmap(picScaled);
     inputImageLabel->setMaximumSize(imageWidth, imageHeight);
 
-    outputImageLabel->setPixmap(picScaled);
+//    inputImageLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+
+    //outputImageLabel->setPixmap(picScaled);
     outputImageLabel->setMaximumSize(imageWidth, imageHeight);
 
     lay->addWidget(inputImageLabel, 0, 1);
     lay->addWidget(outputImageLabel, 1, 1);
+
 
     return central_widget;
 }
@@ -84,14 +121,69 @@ void MainWindow::loadButtonClicked()
 
     if (! fileName.isNull())
     {
-        QPixmap* pic = new QPixmap (fileName);
-        QPixmap picScaled = pic->scaled(imageWidth, imageHeight);
-        inputImageLabel->setPixmap(picScaled);
+        QImage* loadedImage = new QImage(fileName);
+        inputImage = DebayerImageRGGB(loadedImage);
+
+        updateUIWithNewImages();
     }
 }
 
+void MainWindow::updateUIWithNewImages()
+{
+//        qInfo() << "updateUIWithNewImages...";
+
+    if (inputImage != nullptr)
+    {
+//        qInfo() << "inputImage...";
+
+        QPixmap picture = QPixmap::fromImage(* inputImage);
+        QPixmap pictureScaled = picture.scaled(imageWidth, imageHeight);
+        inputImageLabel->setPixmap(pictureScaled);
+        inputImageLabel->setMaximumSize(imageWidth, imageHeight);
+    }
+
+    if (outputImage != nullptr)
+    {
+//        qInfo() << "outputImage...";
+
+        QPixmap outputPicture = QPixmap::fromImage(* outputImage);
+        QPixmap outputPictureScaled = outputPicture.scaled(imageWidth, imageHeight);
+        outputImageLabel->setPixmap(outputPictureScaled);
+        outputImageLabel->setMaximumSize(imageWidth, imageHeight);
+    }
+}
+void MainWindow::ProcessImage()
+{
+    qInfo() << "Process...";
+
+//    outputImage = removeBackground(inputImage, backgroundImage);
+
+//    updateUIWithNewImages();
+}
+ 
+void MainWindow::thresholdSliderReleased(int newValue)
+{
+    qInfo() << "thresholdSliderReleased";
+    qInfo() << threshold->value();
+
+    outputImage = removeBackground(inputImage, backgroundImage, threshold->value());
+
+    updateUIWithNewImages();
+
+}
+
+void MainWindow::imageZoomLevelSliderReleased()
+{
+    float zoomLevel = static_cast<float>(imageZoomLevel->value()) / 100.0f;
+
+    imageWidth = static_cast<int>(640.0f * 2.0f *  zoomLevel);
+    imageHeight = static_cast<int>(480.0f * 2.0f * zoomLevel);
+
+    qInfo() << imageZoomLevel->value() << zoomLevel << imageWidth << imageHeight;
+
+    updateUIWithNewImages();
+}
 
 MainWindow::~MainWindow()
 {
 }
-

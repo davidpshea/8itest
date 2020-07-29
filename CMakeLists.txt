@@ -37,6 +37,12 @@ else()
     main.cpp
     mainwindow.cpp
     mainwindow.h
+    debayered.cpp
+    debayered.h
+    imagelabel.cpp
+    imagelabel.h
+    removebackground.cpp
+    removebackground.h
   )
 endif()
 
