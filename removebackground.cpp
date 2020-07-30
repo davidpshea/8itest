@@ -4,7 +4,7 @@
 #include <QPixmap>
 #include <QDebug>
 
-QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage, int threshold)
+QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage, int threshold[3])
 {
     int width = inputImage->width();
     int height = inputImage->height();
@@ -35,9 +35,9 @@ QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage
             int inputBlue  = qBlue(inputPixel);
 
             if (
-                (abs(backgroundRed - inputRed) <= threshold) &&
-                (abs(backgroundGreen - inputGreen) <= threshold) &&
-                (abs(backgroundBlue - inputBlue) <= threshold)
+                (abs(backgroundRed - inputRed) <= threshold[0]) &&
+                (abs(backgroundGreen - inputGreen) <= threshold[1]) &&
+                (abs(backgroundBlue - inputBlue) <= threshold[2])
             )
             {
                 outputRow[x] = qRgb(255, 0, 0);
