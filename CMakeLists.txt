@@ -39,8 +39,6 @@ else()
     mainwindow.h
     debayered.cpp
     debayered.h
-    imagelabel.cpp
-    imagelabel.h
     removebackground.cpp
     removebackground.h
   )

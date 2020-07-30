@@ -22,7 +22,9 @@ public:
 
 private:
     QWidget* createLayoutWidget();
+
     void updateUIWithNewImages();
+    void loadInputImage();
     void loadBackgroundImage();
     void removeBackgroundFromImage();
 
@@ -36,19 +38,22 @@ private:
     QImage* outputImage = nullptr;
     QImage* backgroundImage = nullptr;
 
+    QString inputImageFilename  = nullptr;
+    QString backdropImageFilename  = nullptr;
+
     QSlider* imageZoomLevel;
-    QSlider* threshold[3];
+    QSlider* thresholdSlider;
 
     int imageWidth;
-//    int imageHeight = 200;
 
 private slots:
-    void loadButtonClicked();
+    void loadImageButtonClicked();
+    void loadBackgroundImageButtonClicked();
     void saveImageButtonClicked();
     void rotateButtonClicked();
     void saveForgroundButtonClicked();
-    void thresholdSliderReleased(int newValue);
-    void imageZoomLevelSliderReleased();
+    void thresholdSliderChanged(int newValue);
+    void imageZoomLevelSliderChanged(int newValue);
 };
 
 #endif // MAINWINDOW_H

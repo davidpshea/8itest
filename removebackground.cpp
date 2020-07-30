@@ -4,15 +4,23 @@
 #include <QPixmap>
 #include <QDebug>
 
-QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage, int threshold[3])
+QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage, int threshold, const QRgb& backgroundColour)
 {
-    int width = inputImage->width();
-    int height = inputImage->height();
+    if ((inputImage == nullptr) || (backgroundImage == nullptr) ||
+        inputImage->isNull() || backgroundImage->isNull()
+    )
+    {
+        return nullptr;
+    }
 
-    qInfo() << "removeBackground";
-    qInfo() << width << height << inputImage->depth();
+    const int width = inputImage->width();
+    const int height = inputImage->height();
 
     QImage* outputImage = new QImage(width, height, QImage::Format_RGB32);
+    if ((outputImage == nullptr) || (outputImage->isNull()))
+    {
+        return nullptr;
+    }
 
     for (int y = 0; y < height; y++)
     {
@@ -26,26 +34,35 @@ QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage
             QRgb inputPixel = inputScanLine[x];
             QRgb backgroundPixel = backgroundScanLine[x];
 
-            int backgroundRed   = qRed(backgroundPixel);
-            int backgroundGreen = qGreen(backgroundPixel);
-            int backgroundBlue  = qBlue(backgroundPixel);
+            const int backgroundRed   = qRed(backgroundPixel);
+            const int backgroundGreen = qGreen(backgroundPixel);
+            const int backgroundBlue  = qBlue(backgroundPixel);
 
-            int inputRed   = qRed(inputPixel);
-            int inputGreen = qGreen(inputPixel);
-            int inputBlue  = qBlue(inputPixel);
+            const int inputRed   = qRed(inputPixel);
+            const int inputGreen = qGreen(inputPixel);
+            const int inputBlue  = qBlue(inputPixel);
 
+            outputRow[x] = (
+                (abs(backgroundRed - inputRed) <= threshold) &&
+                (abs(backgroundGreen - inputGreen) <= threshold) &&
+                (abs(backgroundBlue - inputBlue) <= threshold)
+            ) ? backgroundColour : inputPixel;
+
+
+#if 0
             if (
-                (abs(backgroundRed - inputRed) <= threshold[0]) &&
-                (abs(backgroundGreen - inputGreen) <= threshold[1]) &&
-                (abs(backgroundBlue - inputBlue) <= threshold[2])
+                (abs(backgroundRed - inputRed) <= threshold) &&
+                (abs(backgroundGreen - inputGreen) <= threshold) &&
+                (abs(backgroundBlue - inputBlue) <= threshold)
             )
             {
-                outputRow[x] = qRgb(255, 0, 0);
+                outputRow[x] = backgroundColour;//qRgb(255, 0, 0);
             }
             else
             {
                 outputRow[x] = inputPixel;
             }
+#endif
         }
     }
 

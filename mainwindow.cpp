@@ -12,7 +12,6 @@
 #include <QTransform>
 
 #include "debayered.h"
-#include "imagelabel.h"
 #include "removebackground.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -20,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setCentralWidget(createLayoutWidget());
 
-loadButtonClicked();
+//loadButtonClicked();
 }
 
 QWidget* MainWindow::createLayoutWidget()
@@ -34,14 +33,20 @@ QWidget* MainWindow::createLayoutWidget()
     QVBoxLayout* sidebar = new QVBoxLayout;
     sidebar->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-    // Group buttons
+    // Group buttons together
     QGroupBox* buttonGroupBox = new QGroupBox;
     QVBoxLayout* buttonLayout = new QVBoxLayout;
 
     QPushButton* loadButton = new QPushButton("Load Image...");
-    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()));
+    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadImageButtonClicked()));
     loadButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     buttonLayout->addWidget(loadButton);
+
+    QPushButton* loadBackdropButton = new QPushButton("Load Backdrop...");
+    connect(loadBackdropButton, SIGNAL(clicked()), this, SLOT(loadBackgroundImageButtonClicked()));
+    loadButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    buttonLayout->addWidget(loadBackdropButton);
+
 
     QPushButton* saveImageButton = new QPushButton("Save Image...");
     connect(saveImageButton, SIGNAL(clicked()), this, SLOT(saveImageButtonClicked()));
@@ -61,28 +66,24 @@ QWidget* MainWindow::createLayoutWidget()
     buttonGroupBox->setLayout(buttonLayout);
     sidebar->addWidget(buttonGroupBox);
 
-    QGroupBox* thresholdGroupBox = new QGroupBox(tr("Thresholds"));
-    QFormLayout* thresholdLayout = new QFormLayout;
+    QGroupBox* thresholdGroupBox = new QGroupBox(tr("Threshold"));
+    QVBoxLayout* thresholdLayout = new QVBoxLayout;
 
-    for (int i = 0; i < 3; i++)
-    {
-        threshold[i] = new QSlider(Qt::Orientation::Horizontal);
-        threshold[i]->setMinimum(0);
-        threshold[i]->setMaximum(100);
-        threshold[i]->setValue(10);
-        threshold[i]->setTracking(true);
-        threshold[i]->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        connect(threshold[i], SIGNAL(valueChanged(int)), this, SLOT(thresholdSliderReleased(int)));
-    }
-    thresholdLayout->addRow(tr("R"), threshold[0]);
-    thresholdLayout->addRow(tr("G"), threshold[1]);
-    thresholdLayout->addRow(tr("B"), threshold[2]);
+    thresholdSlider = new QSlider(Qt::Orientation::Horizontal);
+    thresholdSlider->setMinimum(0);
+    thresholdSlider->setMaximum(100);
+    thresholdSlider->setValue(10);
+    thresholdSlider->setTracking(true);
+    thresholdSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    connect(thresholdSlider, SIGNAL(valueChanged(int)), this, SLOT(thresholdSliderChanged(int)));
+
+    thresholdLayout->addWidget(thresholdSlider);
 
     thresholdGroupBox->setLayout(thresholdLayout);
     sidebar->addWidget(thresholdGroupBox);
 
-    QLabel* label = new QLabel("Zoom Level");
-    sidebar->addWidget(label);
+    QGroupBox* zoomGroupBox = new QGroupBox(tr("Zoom"));
+    QVBoxLayout* zoomLayout = new QVBoxLayout;
 
     imageWidth = 640;
 
@@ -90,10 +91,15 @@ QWidget* MainWindow::createLayoutWidget()
     imageZoomLevel->setValue(imageWidth);
     imageZoomLevel->setMinimum(64);
     imageZoomLevel->setMaximum(512);
-//    imageZoomLevel->setTracking(true);
+    imageZoomLevel->setTracking(true);
     imageZoomLevel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    connect(imageZoomLevel, SIGNAL(sliderReleased()), this, SLOT(imageZoomLevelSliderReleased()));
-    sidebar->addWidget(imageZoomLevel);
+    connect(imageZoomLevel, SIGNAL(valueChanged(int)), this, SLOT(imageZoomLevelSliderChanged(int)));
+//    connect(imageZoomLevel, SIGNAL(sliderReleased()), this, SLOT(imageZoomLevelSliderReleased()));
+//    sidebar->addWidget(imageZoomLevel);
+    zoomLayout->addWidget(imageZoomLevel);
+
+    zoomGroupBox->setLayout(zoomLayout);
+    sidebar->addWidget(zoomGroupBox);
 
     QHBoxLayout* imagesLayout = new QHBoxLayout;
     imagesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -116,57 +122,96 @@ QWidget* MainWindow::createLayoutWidget()
 
 void MainWindow::removeBackgroundFromImage()
 {
-    int thresholds[3] = {
-        threshold[0]->value(),
-        threshold[1]->value(),
-        threshold[2]->value()
-    };
-
-    outputImage = removeBackground(inputImage, backgroundImage, thresholds);
+    outputImage = removeBackground(inputImage, backgroundImage, thresholdSlider->value(), qRgb(32, 32, 32));
 }
 
-void MainWindow::loadButtonClicked()
+void MainWindow::loadImageButtonClicked()
 {
     // Ask user for a file to load
-    QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Select Input Image"), "./givenimages", tr("Image Files (*.png *.jpg *.bmp)"));
+    inputImageFilename = QFileDialog::getOpenFileName(this,
+        tr("Select Input Image"), "./givenimages", tr("Image Files (*.png)")
+    );
 
-    if (! fileName.isNull())
+    if (inputImageFilename.isNull())
     {
-        // load the selected image
-        QImage* loadedImage = new QImage(fileName);
-        inputImage = DebayerImageRGGB(loadedImage);
-
-        // reset background to match loaded image
-        loadBackgroundImage();
-
-        removeBackgroundFromImage();
-#if 0
-        // give us an initial processed image too
-        int thresholds[3] = {
-            threshold[0]->value(),
-            threshold[1]->value(),
-            threshold[2]->value()
-        };
-
-        outputImage = removeBackground(inputImage, backgroundImage, thresholds);
-#endif
-        updateUIWithNewImages();
+        inputImage = nullptr;
     }
+    else
+    {
+        loadInputImage();
+    }
+/*        // load the selected image
+        QImage* loadedImage = new QImage(inputImageFilename);
+        inputImage = DebayerImageRGGB(loadedImage);
+*/
+        // reset background to match loaded image
+    loadBackgroundImage();
+    removeBackgroundFromImage();
+    updateUIWithNewImages();
+//    }
+}
+
+void MainWindow::loadBackgroundImageButtonClicked()
+{
+    backdropImageFilename = QFileDialog::getOpenFileName(this,
+        tr("Select Clean background Image"), "./givenfiles", tr("Image Files (*.png)"));
+
+    if (backdropImageFilename.isNull())
+    {
+        backgroundImage = nullptr;
+    }
+    else
+    {
+        loadBackgroundImage();
+    }
+
+    loadInputImage();
+    removeBackgroundFromImage();
+    updateUIWithNewImages();
+
+/*
+    backdropImage = new QImage(backdropImageFilename);
+
+    if ((backdropImage == nullptr) || (backdropImage->isNull()))
+    {
+        backgroundImage = nullptr;
+        return;
+    }
+
+    backgroundImage = DebayerImageRGGB(backdropImage);
+*/
+}
+
+void MainWindow::loadInputImage()
+{
+    QImage* image = new QImage(inputImageFilename);
+
+    inputImage = ((image == nullptr) || image->isNull()) ?
+        nullptr : DebayerImageRGGB(image);
 }
 
 void MainWindow::loadBackgroundImage()
 {
-    QImage* backdropImage = new QImage("./givenfiles/CleanPlate.png");
-    backgroundImage = DebayerImageRGGB(backdropImage);
+    QImage* image = new QImage(backdropImageFilename);
+
+    backgroundImage = ((image == nullptr) || image->isNull()) ?
+        nullptr : DebayerImageRGGB(image);
+/*
+    {
+        backgroundImage = nullptr;
+    }
+    else
+    {
+        backgroundImage = DebayerImageRGGB(backdropImage);
+    }*/
 }
 
 void MainWindow::saveImage(const QImage* image, const QString& title)
 {
-    if (image != nullptr)
+    if ((image != nullptr) && (! image->isNull()))
     {
         QString fileName = QFileDialog::getSaveFileName(this,
-            title, ".", tr("Image Files (*.png *.jpg *.bmp)"));
+            title, ".", tr("Image Files (*.png)"));
 
         if (! fileName.isNull())
         {
@@ -177,7 +222,7 @@ void MainWindow::saveImage(const QImage* image, const QString& title)
 
 QImage* MainWindow::rotateImage(QImage* image, const float angle)
 {
-    if (image == nullptr)
+    if ((image == nullptr) || image->isNull())
     {
         return nullptr;
     }
@@ -212,7 +257,7 @@ void MainWindow::saveForgroundButtonClicked()
 
 void MainWindow::updateUIWithNewImages()
 {
-    if (inputImage != nullptr)
+    if ((inputImage != nullptr) && (! inputImage->isNull()))
     {
         // Scale original large image into something to display
         QImage scaled = inputImage->scaledToWidth(imageWidth);
@@ -221,7 +266,7 @@ void MainWindow::updateUIWithNewImages()
         inputImageLabel->setMaximumSize(imageWidth, scaled.height());
     }
 
-    if (outputImage != nullptr)
+    if ((outputImage != nullptr) && (! outputImage->isNull()))
     {
         // Do same for processed image
         QImage scaled = outputImage->scaledToWidth(imageWidth);
@@ -229,18 +274,20 @@ void MainWindow::updateUIWithNewImages()
         outputImageLabel->setPixmap(picture);
         outputImageLabel->setMaximumSize(imageWidth, scaled.height());
     }
+
+    adjustSize();
 }
 
-void MainWindow::thresholdSliderReleased(int newValue)
+void MainWindow::thresholdSliderChanged(int newValue)
 {
     removeBackgroundFromImage();
 //    outputImage = removeBackground(inputImage, backgroundImage, newValue);
     updateUIWithNewImages();
 }
 
-void MainWindow::imageZoomLevelSliderReleased()
+void MainWindow::imageZoomLevelSliderChanged(int newValue)
 {
-    imageWidth = imageZoomLevel->value();
+    imageWidth = newValue; //imageZoomLevel->value();
 /*
     float zoomLevel = static_cast<float>(imageZoomLevel->value()) / 100.0f;
 
