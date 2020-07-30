@@ -24,12 +24,13 @@ private:
     QWidget* createLayoutWidget();
 
     void updateUIWithNewImages();
-    void loadInputImage();
-    void loadBackgroundImage();
+    QImage* loadImage(const QString& filename);
+//    void loadInputImage();
+//    void loadBackgroundImage();
     void removeBackgroundFromImage();
 
     void saveImage(const QImage* image, const QString& title);
-    QImage* rotateImage(QImage* image, const float angle = 90.0f);
+    QImage* rotateImage(QImage* image, const int angle = 90);
 
     QLabel* inputImageLabel;
     QLabel* outputImageLabel;
@@ -38,13 +39,14 @@ private:
     QImage* outputImage = nullptr;
     QImage* backgroundImage = nullptr;
 
-    QString inputImageFilename  = nullptr;
-    QString backdropImageFilename  = nullptr;
+//    QString inputImageFilename  = nullptr;
+//    QString backdropImageFilename  = nullptr;
 
-    QSlider* imageZoomLevel;
+    QSlider* imageZoomLevelSlider;
     QSlider* thresholdSlider;
 
-    int imageWidth;
+    int imageWidth = 320;
+    int imageRotation = 0;
 
 private slots:
     void loadImageButtonClicked();
