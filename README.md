@@ -10,7 +10,7 @@
 ## Install
 * Clone the remote git repository, this should also give you the master branch.
 
-  `git clone https://davidpshea@bitbucket.org/davidpshea/8itest`
+  `git clone https://github.com/davidpshea/8itest.git`
 
 
 * Switch to the project directory.
