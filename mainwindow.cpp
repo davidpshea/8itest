@@ -7,7 +7,8 @@
 #include <QSlider>
 #include <QFileDialog>
 #include <QDebug>
-
+#include <QGroupBox>
+#include <QFormLayout>
 
 #include "debayered.h"
 #include "imagelabel.h"
@@ -16,100 +17,97 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-#if 1
     setCentralWidget(createLayoutWidget());
-#else
-    QWidget *central_widget = new QWidget;
-    QHBoxLayout* layout = new QHBoxLayout(central_widget);
 
- QWidget *window = new QWidget;
-    QPushButton *button1 = new QPushButton("One");
-    QPushButton *button2 = new QPushButton("Two");
-    QPushButton *button3 = new QPushButton("Three");
-    QPushButton *button4 = new QPushButton("Four");
-    QPushButton *button5 = new QPushButton("Five");
-
-//    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(button1);
-    layout->addWidget(button2);
-    layout->addWidget(button3);
-    layout->addWidget(button4);
-    layout->addWidget(button5);
-//    setLayout(layout);
-setCentralWidget(central_widget);
-
-//    setLayout();
-#endif
+loadButtonClicked();
 }
 
 QWidget* MainWindow::createLayoutWidget()
 {
-    QWidget *central_widget = new QWidget;
-    QGridLayout* lay = new QGridLayout(central_widget);
+    QWidget* rootWidget = new QWidget;
 
-    #if 0
-    display = new QLineEdit("XX");
-     display->setReadOnly(false);
-  //   display->setAlignment(Qt::AlignRight);
-     display->setMaxLength(3);
-     QFont font = display->font();
-     font.setPointSize(font.pointSize() + 8);     
-     display->setFont(font);
-    #endif
+    QHBoxLayout* rootLayout = new QHBoxLayout (rootWidget);
+    rootLayout->setAlignment(rootLayout, Qt::AlignLeft | Qt::AlignTop);
 
-//    QLabel* right_label = new QLabel("RIGHT");
-//    right_label->setAlignment(Qt::AlignCenter);
+    // Controls on left
+    QVBoxLayout* sidebar = new QVBoxLayout;
+    sidebar->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-    QPushButton* loadButton = new QPushButton("Load", this);
+    // Group buttons
+    QGroupBox* buttonGroupBox = new QGroupBox;
+    QVBoxLayout* buttonLayout = new QVBoxLayout;
+
+    QPushButton* loadButton = new QPushButton("Load Image...");
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()));
-//    QSize size = loadButton->
+    loadButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    buttonLayout->addWidget(loadButton);
+
+    QPushButton* saveImageButton = new QPushButton("Save Image...");
+    connect(saveImageButton, SIGNAL(clicked()), this, SLOT(saveImageButtonClicked()));
     loadButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    buttonLayout->addWidget(saveImageButton);
 
-    lay->addWidget(loadButton, 0, 0);
-//    lay->addWidget(display, 1, 0);
+    QPushButton* saveForgroundButton = new QPushButton("Save Forground...");
+    connect(saveForgroundButton, SIGNAL(clicked()), this, SLOT(saveForgroundButtonClicked()));
+    loadButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    buttonLayout->addWidget(saveForgroundButton);
 
-    threshold = new QSlider(Qt::Orientation::Horizontal);
-    threshold->setMinimum(0);
-    threshold->setMaximum(100);
-    threshold->setValue(10);
-    threshold->setTracking(true);
-    threshold->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    connect(threshold, SIGNAL(valueChanged(int)), this, SLOT(thresholdSliderReleased(int)));
+    buttonGroupBox->setLayout(buttonLayout);
+    sidebar->addWidget(buttonGroupBox);
 
+    QGroupBox* thresholdGroupBox = new QGroupBox(tr("Thresholds"));
+    QFormLayout* thresholdLayout = new QFormLayout;
 
+    for (int i = 0; i < 3; i++)
+    {
+        threshold[i] = new QSlider(Qt::Orientation::Horizontal);
+        threshold[i]->setMinimum(0);
+        threshold[i]->setMaximum(100);
+        threshold[i]->setValue(10);
+        threshold[i]->setTracking(true);
+        threshold[i]->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        connect(threshold[i], SIGNAL(valueChanged(int)), this, SLOT(thresholdSliderReleased(int)));
+    }
+    thresholdLayout->addRow(tr("R"), threshold[0]);
+    thresholdLayout->addRow(tr("G"), threshold[1]);
+    thresholdLayout->addRow(tr("B"), threshold[2]);
 
-    lay->addWidget(threshold, 1, 0);
+    thresholdGroupBox->setLayout(thresholdLayout);
+    sidebar->addWidget(thresholdGroupBox);
+
+    QLabel* label = new QLabel("Zoom Level");
+    sidebar->addWidget(label);
 
     imageZoomLevel = new QSlider(Qt::Orientation::Horizontal);
     imageZoomLevel->setValue(20);
     imageZoomLevel->setMinimum(5);
     imageZoomLevel->setMaximum(30);
-    imageZoomLevel->setTracking(true);
+//    imageZoomLevel->setTracking(true);
     imageZoomLevel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     connect(imageZoomLevel, SIGNAL(sliderReleased()), this, SLOT(imageZoomLevelSliderReleased()));
-    lay->addWidget(imageZoomLevel, 2, 0);
+    sidebar->addWidget(imageZoomLevel);
+
+    QHBoxLayout* imagesLayout = new QHBoxLayout;
+    imagesLayout->setAlignment(/*rootLayout,*/ Qt::AlignLeft | Qt::AlignTop);
+
 
     inputImageLabel = new QLabel;
+    inputImageLabel->setMaximumSize(imageWidth, imageHeight);
+    inputImageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    imagesLayout->addWidget(inputImageLabel);
+
     outputImageLabel = new QLabel;
+    outputImageLabel->setMaximumSize(imageWidth, imageHeight);
+    outputImageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    imagesLayout->addWidget(outputImageLabel);
+
+    rootLayout->addLayout(sidebar);
+    rootLayout->addLayout(imagesLayout);
 
     QImage* backdropImage = new QImage("./givenfiles/CleanPlate.png");
     backgroundImage = DebayerImageRGGB(backdropImage);
- //   QPixmap picScaled = pic->scaled(imageWidth, imageHeight);
 
-  //  inputImageLabel->setPixmap(picScaled);
-    inputImageLabel->setMaximumSize(imageWidth, imageHeight);
-
-//    inputImageLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-
-    //outputImageLabel->setPixmap(picScaled);
-    outputImageLabel->setMaximumSize(imageWidth, imageHeight);
-
-    lay->addWidget(inputImageLabel, 0, 1);
-    lay->addWidget(outputImageLabel, 1, 1);
-
-
-    return central_widget;
+    return rootWidget;
 }
 
 
@@ -124,18 +122,24 @@ void MainWindow::loadButtonClicked()
         QImage* loadedImage = new QImage(fileName);
         inputImage = DebayerImageRGGB(loadedImage);
 
+        outputImage = removeBackground(inputImage, backgroundImage, threshold[0]->value());
+
         updateUIWithNewImages();
     }
 }
 
+void MainWindow::saveImageButtonClicked()
+{
+}
+
+void MainWindow::saveForgroundButtonClicked()
+{
+}
+
 void MainWindow::updateUIWithNewImages()
 {
-//        qInfo() << "updateUIWithNewImages...";
-
     if (inputImage != nullptr)
     {
-//        qInfo() << "inputImage...";
-
         QPixmap picture = QPixmap::fromImage(* inputImage);
         QPixmap pictureScaled = picture.scaled(imageWidth, imageHeight);
         inputImageLabel->setPixmap(pictureScaled);
@@ -144,32 +148,29 @@ void MainWindow::updateUIWithNewImages()
 
     if (outputImage != nullptr)
     {
-//        qInfo() << "outputImage...";
-
         QPixmap outputPicture = QPixmap::fromImage(* outputImage);
         QPixmap outputPictureScaled = outputPicture.scaled(imageWidth, imageHeight);
         outputImageLabel->setPixmap(outputPictureScaled);
         outputImageLabel->setMaximumSize(imageWidth, imageHeight);
     }
 }
-void MainWindow::ProcessImage()
+/*void MainWindow::ProcessImage()
 {
-    qInfo() << "Process...";
+//    qInfo() << "Process...";
 
 //    outputImage = removeBackground(inputImage, backgroundImage);
 
 //    updateUIWithNewImages();
 }
- 
+ */
+
 void MainWindow::thresholdSliderReleased(int newValue)
 {
-    qInfo() << "thresholdSliderReleased";
-    qInfo() << threshold->value();
+//    qInfo() << "thresholdSliderReleased";
+//    qInfo() << newValue;
 
-    outputImage = removeBackground(inputImage, backgroundImage, threshold->value());
-
+    outputImage = removeBackground(inputImage, backgroundImage, newValue);
     updateUIWithNewImages();
-
 }
 
 void MainWindow::imageZoomLevelSliderReleased()

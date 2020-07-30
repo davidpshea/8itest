@@ -23,9 +23,7 @@ public:
 private:
     QWidget* createLayoutWidget();
     void updateUIWithNewImages();
-    void ProcessImage();
-
-//    QLineEdit* display;
+//    void ProcessImage();
 
     QLabel* inputImageLabel;
     QLabel* outputImageLabel;
@@ -36,14 +34,17 @@ private:
     QImage* backgroundImage = nullptr;
 
     QSlider* imageZoomLevel;
-    QSlider* threshold;
+    QSlider* threshold[3];
 
-    int imageWidth = 320; //640;
+    int imageWidth = 320;
     int imageHeight = 200;
 
 private slots:
     void loadButtonClicked();
+    void saveImageButtonClicked();
+    void saveForgroundButtonClicked();
     void thresholdSliderReleased(int newValue);
     void imageZoomLevelSliderReleased();
 };
+
 #endif // MAINWINDOW_H

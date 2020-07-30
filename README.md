@@ -8,14 +8,14 @@
 * Git installed
 
 ## Install
-* Clone the remote git repository,
+* Clone the remote git repository, this should also give you the master branch.
 
   `git clone https://davidpshea@bitbucket.org/davidpshea/8itest`
 
-* Checkout the master branch.
+
+* Switch to the project directory.
 
   `cd 8itest`
-`git checkout master`
 
 * If not already done, let cmake know where the QT cmake package configuration is by setting the
 environment variable `CMAKE_PREFIX_PATH`
@@ -25,13 +25,15 @@ For instance, for my Mac, this would be
 
 * Initialise the build using cmake
 
-  `cmake .`
+  `cmake . -B build`
 
 * Build the app, for example, this will build the release version.
 
-  `cmake --build . --config release`
+  `cmake --build build --config release`
 
-* You should then have an executable `8i`
+* You should then have an executable `8i` in the build directory. You should run this in the `8itest` directory (where the source files are) so the app knows where the background image is, as it looks for the folder `givenfiles`
+
+  `./build/8i`
 
 ## Example Output
-![alt text](./givenfiles/Barbie.png "Title")
+! [COMING SOON](./givenfiles/Barbie.png "Title")
