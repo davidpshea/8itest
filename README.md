@@ -1,6 +1,6 @@
 # README #
 
-### How do I get set up? ###
+## How do I get set up?
 
 ## Prerequsites
 * QT installed.
@@ -35,5 +35,25 @@ For instance, for my Mac, this would be
 
   `./build/8i`
 
+## Running
+
+When the app runs, there's 5 buttons on the left, and a slider.
+- `Load Image` Loads an image to be background removed.
+- `Load Backdrop` Loads a blank backdrop that's the background without anything to remove.
+- `Save Image` Saves the original image, debayered, and orientated as seen in the app as a PNG file.
+- `Save Foreground` Saves the background removed image, orientated as seen in the app as a PNG file.
+- `Rotate 90` Rotates the images 90 degrees clockwise on each click.
+- The slider `threshold` controls how exact the match between background pixels has to be before it's considered background.
+
+- You can resize the window and the images will resize with it.
+- There's some sample output in `exampleoutput`
+- The original images are held in `givenfiles`.
+
+## Known Issues
+
+- There's some resize oddness when the window gets too small to hold both images.
+- Button layout could do with improving.
+
 ## Example Output
-! [COMING SOON](./givenfiles/Barbie.png "Title")
+![](./exampleoutput/image2.png "Title")
+![](./exampleoutput/fg2.png "Title")

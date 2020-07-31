@@ -80,19 +80,7 @@ QWidget* MainWindow::createLayoutWidget()
 
     QGroupBox* zoomGroupBox = new QGroupBox(tr("Zoom"));
     QVBoxLayout* zoomLayout = new QVBoxLayout;
-/*
-    zoomGroupBox->setLayout(zoomLayout);
-    sidebar->addWidget(zoomGroupBox);
 
-    imageZoomLevelSlider = new QSlider(Qt::Orientation::Horizontal);
-    imageZoomLevelSlider->setMinimum(128);
-    imageZoomLevelSlider->setMaximum(512);
-    imageZoomLevelSlider->setTracking(true);
-    imageZoomLevelSlider->setValue(imageWidth);
-    imageZoomLevelSlider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    connect(imageZoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(imageZoomLevelSliderChanged(int)));
-    zoomLayout->addWidget(imageZoomLevelSlider);
-*/
     QHBoxLayout* imagesLayout = new QHBoxLayout;
     rootLayout->addLayout(imagesLayout);
     imagesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -210,20 +198,8 @@ void MainWindow::saveForgroundButtonClicked()
 
 void MainWindow::updateUIWithNewImages()
 {
-    if ((inputImage != nullptr) && (! inputImage->isNull()))
-    {
- //       inputImageLabel->setImageWidth(imageWidth);
-        inputImageLabel->setImage(inputImage);
-    }
-
-    if ((outputImage != nullptr) && (! outputImage->isNull()))
-    {
-        // Do same for processed image
-//        outputImageLabel->setImageWidth(imageWidth);
-        outputImageLabel->setImage(outputImage);
-    }
-
-//    adjustSize();
+    inputImageLabel->setImage(inputImage);
+    outputImageLabel->setImage(outputImage);
 }
 
 void MainWindow::thresholdSliderChanged(int newValue)
@@ -231,14 +207,6 @@ void MainWindow::thresholdSliderChanged(int newValue)
     removeBackgroundFromImage();
     updateUIWithNewImages();
 }
-
-#if 0
-void MainWindow::imageZoomLevelSliderChanged(int newValue)
-{
-  //  imageWidth = newValue;
-//    updateUIWithNewImages();
-}
-#endif
 
 MainWindow::~MainWindow()
 {
