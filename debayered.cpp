@@ -17,9 +17,6 @@ QImage* DebayerImageRGGB(const QImage* inputImage)
     const int width = inputImage->width();
     const int height = inputImage->height();
 
-    qInfo() << "Image";
-    qInfo() << width << height << inputImage->depth();
-
     QImage* outputImage = new QImage(width / 2, height / 2, QImage::Format_RGB32);
     if ((outputImage == nullptr) || (outputImage->isNull()))
     {
@@ -44,13 +41,7 @@ QImage* DebayerImageRGGB(const QImage* inputImage)
                 (scanLines[1])[inputX],
                 (scanLines[1])[inputX + 1]
             };
-/*
-            const int red   = qRed(pixels[0]);
-            const int blue  = qBlue(pixels[3]);
-            const int green = (qGreen(pixels[1]) + qGreen(pixels[2])) / 2;
 
-            outputRow[outputX] = qRgb(red, green, blue);
-*/
             outputRow[outputX] = qRgb(
                 qRed(pixels[0]),
                 (qGreen(pixels[1]) + qGreen(pixels[2])) / 2,

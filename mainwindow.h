@@ -3,13 +3,14 @@
 
 #include <QMainWindow>
 //#include <QWidget>
-#include <QLineEdit>
+//#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 class QLabel;
 class QWidget;
 class ImageLabel;
 class QSlider;
+class QVBoxLayout;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -20,13 +21,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+//    virtual void resizeEvent(QResizeEvent *ev) override;
+
 private:
     QWidget* createLayoutWidget();
 
     void updateUIWithNewImages();
-    QImage* loadImage(const QString& filename);
+//    QImage* loadImage(const QString& filename);
 //    void loadInputImage();
 //    void loadBackgroundImage();
+    QImage* loadImage(const QString& title);
     void removeBackgroundFromImage();
 
     void saveImage(const QImage* image, const QString& title);
@@ -41,6 +45,7 @@ private:
 
 //    QString inputImageFilename  = nullptr;
 //    QString backdropImageFilename  = nullptr;
+    QVBoxLayout* sidebar;
 
     QSlider* imageZoomLevelSlider;
     QSlider* thresholdSlider;

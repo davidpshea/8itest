@@ -47,22 +47,6 @@ QImage* removeBackground(const QImage* inputImage, const QImage* backgroundImage
                 (abs(backgroundGreen - inputGreen) <= threshold) &&
                 (abs(backgroundBlue - inputBlue) <= threshold)
             ) ? backgroundColour : inputPixel;
-
-
-#if 0
-            if (
-                (abs(backgroundRed - inputRed) <= threshold) &&
-                (abs(backgroundGreen - inputGreen) <= threshold) &&
-                (abs(backgroundBlue - inputBlue) <= threshold)
-            )
-            {
-                outputRow[x] = backgroundColour;//qRgb(255, 0, 0);
-            }
-            else
-            {
-                outputRow[x] = inputPixel;
-            }
-#endif
         }
     }
 
