@@ -14,16 +14,10 @@ ImageLabel::ImageLabel() :
 void ImageLabel::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
-
     qInfo() << "RESIZE img";
 
     int width = event->size().width();
-//    QRect r = sidebar->geometry();
-
-//    int width2 = width - r.width();
-
     qInfo() << event->size().width() << event->size().height();
-//    qInfo() << width2;
     setImageWidth(width);
 //    resizeImage();
 }

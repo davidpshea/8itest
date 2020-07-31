@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include <QWidget>
-//#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -21,30 +19,23 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-//    virtual void resizeEvent(QResizeEvent *ev) override;
-
 private:
     QWidget* createLayoutWidget();
 
     void updateUIWithNewImages();
-//    QImage* loadImage(const QString& filename);
-//    void loadInputImage();
-//    void loadBackgroundImage();
     QImage* loadImage(const QString& title);
     void removeBackgroundFromImage();
 
     void saveImage(const QImage* image, const QString& title);
     QImage* rotateImage(QImage* image, const int angle = 90);
 
-    ImageLabel* /*QLabel**/ inputImageLabel;
-    ImageLabel* /*QLabel**/ outputImageLabel;
+    ImageLabel* inputImageLabel;
+    ImageLabel* outputImageLabel;
 
     QImage* inputImage = nullptr;
     QImage* outputImage = nullptr;
     QImage* backgroundImage = nullptr;
 
-//    QString inputImageFilename  = nullptr;
-//    QString backdropImageFilename  = nullptr;
     QVBoxLayout* sidebar;
 
     QSlider* imageZoomLevelSlider;

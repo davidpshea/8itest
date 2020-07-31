@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <QGroupBox>
 #include <QTransform>
-#include <QResizeEvent>
 
 #include "debayered.h"
 #include "removebackground.h"
