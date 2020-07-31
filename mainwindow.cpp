@@ -27,7 +27,7 @@ QWidget* MainWindow::createLayoutWidget()
     rootLayout->setAlignment(rootLayout, Qt::AlignLeft | Qt::AlignTop);
 
     // Controls on left
-    sidebar = new QVBoxLayout;
+    QVBoxLayout* sidebar = new QVBoxLayout;
     rootLayout->addLayout(sidebar);
     sidebar->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -80,7 +80,7 @@ QWidget* MainWindow::createLayoutWidget()
 
     QGroupBox* zoomGroupBox = new QGroupBox(tr("Zoom"));
     QVBoxLayout* zoomLayout = new QVBoxLayout;
-
+/*
     zoomGroupBox->setLayout(zoomLayout);
     sidebar->addWidget(zoomGroupBox);
 
@@ -92,19 +92,25 @@ QWidget* MainWindow::createLayoutWidget()
     imageZoomLevelSlider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     connect(imageZoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(imageZoomLevelSliderChanged(int)));
     zoomLayout->addWidget(imageZoomLevelSlider);
-
+*/
     QHBoxLayout* imagesLayout = new QHBoxLayout;
     rootLayout->addLayout(imagesLayout);
     imagesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
+    QImage* blankImage = new QImage(320, 200, QImage::Format_RGB32);
+    blankImage->fill(Qt::darkGreen);
+
     inputImageLabel = new ImageLabel;
     inputImageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    inputImageLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    inputImageLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    inputImageLabel->setImage(blankImage);
+
     imagesLayout->addWidget(inputImageLabel);
 
     outputImageLabel = new ImageLabel;
-    outputImageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    outputImageLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    outputImageLabel->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    outputImageLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    outputImageLabel->setImage(blankImage);
     imagesLayout->addWidget(outputImageLabel);
 
     return rootWidget;
@@ -206,18 +212,18 @@ void MainWindow::updateUIWithNewImages()
 {
     if ((inputImage != nullptr) && (! inputImage->isNull()))
     {
-        inputImageLabel->setImageWidth(imageWidth);
+ //       inputImageLabel->setImageWidth(imageWidth);
         inputImageLabel->setImage(inputImage);
     }
 
     if ((outputImage != nullptr) && (! outputImage->isNull()))
     {
         // Do same for processed image
-        outputImageLabel->setImageWidth(imageWidth);
+//        outputImageLabel->setImageWidth(imageWidth);
         outputImageLabel->setImage(outputImage);
     }
 
-    adjustSize();
+//    adjustSize();
 }
 
 void MainWindow::thresholdSliderChanged(int newValue)
@@ -226,11 +232,13 @@ void MainWindow::thresholdSliderChanged(int newValue)
     updateUIWithNewImages();
 }
 
+#if 0
 void MainWindow::imageZoomLevelSliderChanged(int newValue)
 {
-    imageWidth = newValue;
-    updateUIWithNewImages();
+  //  imageWidth = newValue;
+//    updateUIWithNewImages();
 }
+#endif
 
 MainWindow::~MainWindow()
 {

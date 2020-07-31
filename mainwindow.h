@@ -36,12 +36,12 @@ private:
     QImage* outputImage = nullptr;
     QImage* backgroundImage = nullptr;
 
-    QVBoxLayout* sidebar;
+//    QVBoxLayout* sidebar;
 
-    QSlider* imageZoomLevelSlider;
+//    QSlider* imageZoomLevelSlider;
     QSlider* thresholdSlider;
 
-    int imageWidth = 320;
+//    int imageWidth = 320;
     int imageRotation = 0;
 
 private slots:
@@ -51,7 +51,7 @@ private slots:
     void rotateButtonClicked();
     void saveForgroundButtonClicked();
     void thresholdSliderChanged(int newValue);
-    void imageZoomLevelSliderChanged(int newValue);
+//    void imageZoomLevelSliderChanged(int newValue);
 };
 
 #endif // MAINWINDOW_H

@@ -17,6 +17,10 @@ public:
     void setImage(QImage* newImage);
     void setImageWidth(int newWidth);
 
+    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual int heightForWidth( int width ) const override;
+    virtual QSize sizeHint() const override;
+
 private:
     void rescale(int newWidth);
 
