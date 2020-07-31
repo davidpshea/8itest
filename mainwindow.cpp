@@ -37,27 +37,27 @@ QWidget* MainWindow::createLayoutWidget()
 
     QPushButton* loadButton = new QPushButton("Load Image...");
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadImageButtonClicked()));
-    loadButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    buttonLayout->addWidget(loadButton, 0);
+    loadButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    buttonLayout->addWidget(loadButton);
 
     QPushButton* loadBackdropButton = new QPushButton("Load Backdrop...");
     connect(loadBackdropButton, SIGNAL(clicked()), this, SLOT(loadBackgroundImageButtonClicked()));
-    loadButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    loadButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     buttonLayout->addWidget(loadBackdropButton, 0);
 
     QPushButton* saveImageButton = new QPushButton("Save Image...");
     connect(saveImageButton, SIGNAL(clicked()), this, SLOT(saveImageButtonClicked()));
-    loadButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    loadButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     buttonLayout->addWidget(saveImageButton, 0);
 
     QPushButton* saveForgroundButton = new QPushButton("Save Forground...");
     connect(saveForgroundButton, SIGNAL(clicked()), this, SLOT(saveForgroundButtonClicked()));
-    loadButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    loadButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     buttonLayout->addWidget(saveForgroundButton, 0);
 
     QPushButton* rotateButton = new QPushButton("Rotate 90");
     connect(rotateButton, SIGNAL(clicked()), this, SLOT(rotateButtonClicked()));
-    rotateButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    rotateButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     buttonLayout->addWidget(rotateButton, 0);
 
     sidebar->addLayout(buttonLayout);

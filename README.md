@@ -52,7 +52,6 @@ When the app runs, there's 5 buttons on the left, and a slider.
 ## Known Issues
 
 - There's some resize oddness when the window gets too small to hold both images.
-- Button layout could do with improving.
 
 ## Example Output
 ![](./exampleoutput/image2.png "Title")
