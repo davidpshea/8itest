@@ -16,6 +16,7 @@
 
 #include "debayered.h"
 #include "removebackground.h"
+#include "imagelabel.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -108,13 +109,11 @@ QWidget* MainWindow::createLayoutWidget()
     rootLayout->addLayout(imagesLayout);
     imagesLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-    inputImageLabel = new QLabel;
-    inputImageLabel->setMaximumSize(imageWidth, imageWidth);
+    inputImageLabel = new ImageLabel;
     inputImageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     imagesLayout->addWidget(inputImageLabel);
 
-    outputImageLabel = new QLabel;
-    outputImageLabel->setMaximumSize(imageWidth, imageWidth);
+    outputImageLabel = new ImageLabel;
     outputImageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     imagesLayout->addWidget(outputImageLabel);
 
@@ -286,22 +285,15 @@ void MainWindow::updateUIWithNewImages()
 {
     if ((inputImage != nullptr) && (! inputImage->isNull()))
     {
-        qInfo() << "updateUIWithNewImages" << imageWidth;
-
-        // Scale original large image into something to display
-        QImage scaled = inputImage->scaledToWidth(imageWidth);
-        QPixmap picture = QPixmap::fromImage(scaled);
-        inputImageLabel->setPixmap(picture);
-        inputImageLabel->setMaximumSize(imageWidth, scaled.height());
+        inputImageLabel->setImageWidth(imageWidth);
+        inputImageLabel->setImage(inputImage);
     }
 
     if ((outputImage != nullptr) && (! outputImage->isNull()))
     {
         // Do same for processed image
-        QImage scaled = outputImage->scaledToWidth(imageWidth);
-        QPixmap picture = QPixmap::fromImage(scaled);
-        outputImageLabel->setPixmap(picture);
-        outputImageLabel->setMaximumSize(imageWidth, scaled.height());
+        outputImageLabel->setImageWidth(imageWidth);
+        outputImageLabel->setImage(outputImage);
     }
 
     adjustSize();

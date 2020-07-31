@@ -41,6 +41,8 @@ else()
     debayered.h
     removebackground.cpp
     removebackground.h
+    imagelabel.cpp
+    imagelabel.h
   )
 endif()
 

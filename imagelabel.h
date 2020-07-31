@@ -1,26 +1,26 @@
+#ifndef IMAGELABEL_H
+#define IMAGELABEL_H
+
 #include <QWidget>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
-class QLabel;
 QT_END_NAMESPACE
 
-class ImageLabel : public QWidget
+class ImageLabel : public QLabel
 {
     Q_OBJECT
 
 public:
-    explicit ImageLabel(QWidget* parent = 0);
-    const QPixmap pixmap() const;
+    explicit ImageLabel();
 
-public slots:
-    void setPixmap(const QPixmap& pixmap);
-
-protected:
-    void resizeEvent(QResizeEvent* event);
-
-private slots:
-    void resizeImage();
+    void setImage(QImage* newImage);
+    void setImageWidth(int newWidth);
 
 private:
-    QLabel* label;
+    void rescale(int newWidth);
+
+    QImage* image = nullptr;
+    int imageWidth = 0;
 };
+#endif

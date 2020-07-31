@@ -32,8 +32,8 @@ private:
     void saveImage(const QImage* image, const QString& title);
     QImage* rotateImage(QImage* image, const int angle = 90);
 
-    QLabel* inputImageLabel;
-    QLabel* outputImageLabel;
+    ImageLabel* /*QLabel**/ inputImageLabel;
+    ImageLabel* /*QLabel**/ outputImageLabel;
 
     QImage* inputImage = nullptr;
     QImage* outputImage = nullptr;
